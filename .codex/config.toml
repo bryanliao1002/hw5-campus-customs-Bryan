@@ -1,0 +1,6 @@
+[mcp_servers.campus_customs]
+command = "mcp_server/.venv/bin/python"
+args = ["mcp_server/server.py"]
+enabled = true
+startup_timeout_sec = 20
+tool_timeout_sec = 30

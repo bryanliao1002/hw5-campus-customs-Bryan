@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#100c12">
+  <title>Campus Customs — Ticket Workflow Comparison</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --page: #100c12;
+      --surface: #19131d;
+      --surface-raised: #211927;
+      --line: #392b3e;
+      --text: #f8f2f8;
+      --muted: #baadbd;
+      --pink: #ff6eb4;
+      --pink-bright: #ff9bca;
+      --pink-wash: #382138;
+      --green: #a8e8ce;
+      --amber: #ffd38d;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      background:
+        radial-gradient(ellipse at 80% -10%, rgba(255, 110, 180, .14), transparent 35rem),
+        var(--page);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .shell { width: min(1080px, calc(100% - 36px)); margin: 0 auto; }
+
+    header { padding: 44px 0 28px; }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--pink-bright);
+      font-size: .75rem;
+      font-weight: 800;
+      letter-spacing: .17em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 760px;
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 3.35rem);
+      letter-spacing: -.045em;
+      line-height: 1.08;
+    }
+
+    .intro { max-width: 720px; margin: 16px 0 0; color: var(--muted); font-size: 1.02rem; }
+
+    .rule-note {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      max-width: 820px;
+      margin-top: 22px;
+      padding: 13px 16px;
+      border: 1px solid #65405d;
+      border-radius: 12px;
+      background: rgba(56, 33, 56, .6);
+      color: #f4dcec;
+      font-size: .9rem;
+    }
+
+    .rule-note strong { color: var(--pink-bright); white-space: nowrap; }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 0 0 10px;
+      border-bottom: 1px solid var(--line);
+      scrollbar-width: thin;
+    }
+
+    .tab {
+      flex: 0 0 auto;
+      padding: 10px 15px;
+      border: 1px solid transparent;
+      border-radius: 10px 10px 0 0;
+      background: transparent;
+      color: var(--muted);
+      font: inherit;
+      font-size: .92rem;
+      font-weight: 720;
+      cursor: pointer;
+    }
+
+    .tab:hover { color: var(--text); background: rgba(255,255,255,.035); }
+
+    .tab[aria-selected="true"] {
+      border-color: var(--line);
+      border-bottom-color: var(--surface);
+      background: var(--surface);
+      color: var(--pink-bright);
+    }
+
+    button:focus-visible { outline: 3px solid var(--pink-bright); outline-offset: 3px; }
+
+    main { padding: 18px 0 54px; }
+
+    .panel {
+      padding: clamp(20px, 4vw, 34px);
+      border: 1px solid var(--line);
+      border-radius: 0 16px 16px 16px;
+      background: linear-gradient(145deg, rgba(33,25,39,.96), rgba(25,19,29,.98));
+      box-shadow: 0 22px 65px rgba(0,0,0,.2);
+    }
+
+    .panel[hidden] { display: none; }
+
+    .ticket-heading { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; }
+
+    .ticket-heading h2 { margin: 0; font-size: clamp(1.5rem, 3vw, 2rem); letter-spacing: -.025em; }
+
+    .ticket-type {
+      padding: 4px 10px;
+      border: 1px solid #65405d;
+      border-radius: 999px;
+      background: var(--pink-wash);
+      color: var(--pink-bright);
+      font-size: .76rem;
+      font-weight: 780;
+      letter-spacing: .04em;
+    }
+
+    .facts { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 28px; }
+
+    .fact {
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255,255,255,.025);
+      color: #e5dae8;
+      font-size: .84rem;
+    }
+
+    .section-title {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin: 24px 0 13px;
+      font-size: 1.12rem;
+    }
+
+    .section-title::before {
+      width: 4px;
+      height: 20px;
+      border-radius: 4px;
+      background: var(--pink);
+      content: "";
+    }
+
+    .expected-copy { color: #e7dfe9; }
+    .expected-copy p { margin: 0 0 12px; }
+
+    .sequence { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; counter-reset: flow; }
+
+    .sequence li {
+      position: relative;
+      padding: 14px 16px 14px 54px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255,255,255,.025);
+      counter-increment: flow;
+    }
+
+    .sequence li::before {
+      position: absolute;
+      top: 13px;
+      left: 15px;
+      display: grid;
+      width: 27px;
+      height: 27px;
+      place-items: center;
+      border-radius: 9px;
+      background: var(--pink-wash);
+      color: var(--pink-bright);
+      content: counter(flow);
+      font-size: .82rem;
+      font-weight: 850;
+    }
+
+    .sequence strong { color: var(--text); }
+    .sequence p { margin: 5px 0 0; color: var(--muted); font-size: .92rem; }
+
+    .tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .tools li {
+      padding: 7px 10px;
+      border: 1px solid #4c374f;
+      border-radius: 8px;
+      background: #211827;
+      color: #f0d6e7;
+      font-size: .84rem;
+    }
+
+    code { color: var(--pink-bright); font-size: .93em; }
+
+    .caution {
+      margin-top: 17px;
+      padding: 12px 14px;
+      border-left: 3px solid var(--amber);
+      border-radius: 0 9px 9px 0;
+      background: rgba(255,211,141,.07);
+      color: #f4dfbd;
+      font-size: .9rem;
+    }
+
+    .actual-box {
+      min-height: 104px;
+      padding: 16px;
+      border: 1px dashed #665365;
+      border-radius: 12px;
+      background: rgba(255,255,255,.012);
+      color: #e7dfe9;
+      font-size: .9rem;
+    }
+
+    .actual-box p { margin: 0 0 11px; }
+    .actual-box ul { margin: 6px 0 13px; padding-left: 21px; }
+    .actual-box li { margin: 4px 0; }
+    .actual-box strong { color: var(--text); }
+    .actual-note { margin-top: 12px !important; padding: 10px 12px; border-left: 3px solid var(--amber); border-radius: 0 8px 8px 0; background: rgba(255,211,141,.07); color: #f4dfbd; }
+
+    .cash-intro { max-width: 820px; margin: 17px 0; color: var(--muted); font-size: .93rem; }
+    .cash-intro strong { color: var(--text); }
+    .cash-summary { display: grid; gap: 4px; max-width: 420px; margin: 18px 0 26px; padding: 17px 19px; border: 1px solid #70435f; border-radius: 13px; background: linear-gradient(120deg, rgba(255,110,180,.12), rgba(255,255,255,.02)); }
+    .cash-summary > span { color: var(--pink-bright); font-size: .72rem; font-weight: 800; letter-spacing: .12em; }
+    .cash-summary strong { color: #fff1f8; font-size: 1.8rem; letter-spacing: -.04em; }
+    .cash-summary small { color: var(--muted); font-size: .8rem; }
+    .cash-ledger-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; }
+    .cash-ledger { width: 100%; min-width: 650px; border-collapse: collapse; background: rgba(255,255,255,.015); }
+    .cash-ledger th, .cash-ledger td { padding: 12px 14px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    .cash-ledger th { color: var(--pink-bright); background: rgba(255,110,180,.06); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; }
+    .cash-ledger td { color: #e5dce7; font-size: .86rem; }
+    .cash-ledger td:nth-child(3), .cash-ledger td:nth-child(4) { white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .cash-ledger tr:last-child td { border-bottom: 0; }
+    .cash-ledger .cash-pending { color: var(--muted); font-style: italic; }
+    .cash-footnote { margin: 14px 0 0; color: var(--muted); font-size: .84rem; }
+
+    .coming {
+      display: grid;
+      min-height: 250px;
+      place-items: center;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .coming strong { display: block; color: var(--pink-bright); font-size: 1.25rem; }
+
+    footer { padding: 0 0 30px; color: #8f8294; font-size: .82rem; }
+
+    @media (max-width: 560px) {
+      .shell { width: min(100% - 24px, 1080px); }
+      header { padding-top: 30px; }
+      .rule-note { display: block; }
+      .rule-note strong { display: block; margin-bottom: 3px; }
+      .panel { border-radius: 0 0 14px 14px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header>
+      <p class="eyebrow">Campus Customs · Problems 6 &amp; 9</p>
+      <h1>Ticket workflow comparison</h1>
+      <p class="intro">The original Expected plans remain below, alongside the actual agent, human, MCP, and payment evidence recorded during Problem 9.</p>
+      <div class="rule-note"><strong>Evidence note</strong><span>Actual outcomes are transcribed from the working database, decision records, and append-only audit trail. Human approvals are identified explicitly. A resolved ticket is not automatically proof that goods were delivered.</span></div>
+    </header>
+
+    <nav class="tabs" role="tablist" aria-label="Ticket workflow tabs">
+      <button class="tab" id="tab-101" role="tab" aria-selected="true" aria-controls="panel-101" tabindex="0">Ticket 101</button>
+      <button class="tab" id="tab-102" role="tab" aria-selected="false" aria-controls="panel-102" tabindex="-1">Ticket 102</button>
+      <button class="tab" id="tab-103" role="tab" aria-selected="false" aria-controls="panel-103" tabindex="-1">Ticket 103</button>
+      <button class="tab" id="tab-cash" role="tab" aria-selected="false" aria-controls="panel-cash" tabindex="-1">Cash</button>
+      <button class="tab" id="tab-reflection" role="tab" aria-selected="false" aria-controls="panel-reflection" tabindex="-1">Reflection</button>
+    </nav>
+
+    <main>
+      <section class="panel" id="panel-101" role="tabpanel" aria-labelledby="tab-101" tabindex="0">
+        <div class="ticket-heading"><h2>Ticket 101 · Bulldog tee</h2><span class="ticket-type">Customer order</span></div>
+        <div class="facts"><span class="fact">CC-TEE-WHITE · size S · quantity 1</span><span class="fact">Starting stock: 0</span><span class="fact">Linked invoice 501: $840 · open</span></div>
+
+        <h3 class="section-title">Expected</h3>
+        <div class="expected-copy">
+          <p><strong>Boss should contact Inventory first.</strong> The immediate customer problem is that the requested size is out of stock, so Inventory should establish the exact shortfall and whether the linked supplier is allowed to replenish it. The ticket already links invoice 501 to Bulldog Print Co.; its unpaid status is a shipment blocker that has to be addressed before promising fulfillment.</p>
+          <ol class="sequence">
+            <li><strong>Boss → Inventory:</strong><p>Ask Inventory to confirm stock for the exact SKU and size, inspect the available vendor facts without assuming a SKU/vendor match, then follow the ticket-linked invoice to its supplier, recorded lead time, and unpaid invoices. Inventory should report the block and avoid promising a delivery date.</p></li>
+            <li><strong>Inventory → Accounting:</strong><p>Because the restock is blocked by an open $840 invoice, ask Accounting to check the checking balance and any reserved/pending requests, verify the exact linked obligation, and—if funds remain sufficient—queue an $840 payment request for a human. Accounting must not approve or process it.</p></li>
+            <li><strong>Boss → Customer Service:</strong><p>After reviewing the specialists’ findings, ask Customer Service for a short, accurate customer update draft. It should explain that availability is being checked and avoid promising shipment or timing until a human-approved payment clears the supplier block.</p></li>
+            <li><strong>Boss final review:</strong><p>Summarize the stockout, supplier hold, any pending human approval, and the draft’s status. Keep the ticket unresolved for fulfillment until the approval and supplier eligibility are confirmed.</p></li>
+          </ol>
+        </div>
+        <h3 class="section-title">Expected MCP tools</h3>
+        <ul class="tools">
+          <li><code>list_open_tickets()</code> — Boss’ initial queue review</li>
+          <li><code>get_ticket_product_context(101)</code> — exact stock and item facts</li>
+          <li><code>get_ticket_restock_options(101)</code> — vendor facts and explicit absence of a SKU/vendor mapping</li>
+          <li><code>get_ticket_supplier_context(101)</code> — invoice, vendor, lead days, shop-date overdue status</li>
+          <li><code>get_ticket_financial_context(101)</code> — cash and pending requests</li>
+          <li><code>request_payment_approval(101, invoice, 501, 840, checking)</code> — proposal only</li>
+          <li><code>append_ticket_board_item(101, customer_message_draft, …)</code> — save draft, do not send</li>
+        </ul>
+        <div class="caution"><strong>Hold point:</strong> Bulldog Print Co. has an unpaid invoice, so the system must not arrange another shipment from it until the invoice has actually been paid through a human-approved process. The recorded lead time is 5 days, but that is not a promise of arrival.</div>
+
+        <h3 class="section-title">Actual</h3>
+        <div class="actual-box" aria-label="Actual ticket 101 workflow">
+          <p><strong>Recorded workflow:</strong> an initial attempt (<code>24033c8b-08e2-4b61-a298-bb3d7232882f</code>) stopped at the model request limit. In the next run (<code>208233eb-e086-4829-8294-35e4eab442c2</code>), Boss delegated to Inventory, Accounting, and Customer Service. All three specialist results were saved, but Boss synthesis failed at the then-current token limit. After the human payment approval and fulfillment choice were recorded, a separate Boss-only recovery (<code>ee7a96a6-f7ed-4d42-8f63-6434545a4292</code>) reused that evidence; it did not rerun the specialists.</p>
+          <ul>
+            <li><strong>Inventory:</strong> verified CC-TEE-WHITE size S stock was 0 (shortfall 1), and distinguished Bulldog Print Co.’s historical invoice/product link from proof of current supply. Its unpaid invoice blocked another shipment until payment.</li>
+            <li><strong>Accounting:</strong> verified linked invoice 501 for $840, checked available cash, and prepared payment request 1 for human approval; it did not approve or pay.</li>
+            <li><strong>Customer Service:</strong> saved ticket-board draft 1 explaining the item was unavailable and no restock/delivery date was confirmed. The draft was not sent.</li>
+            <li><strong>Boss:</strong> recovery synthesized the saved specialist findings with current MCP evidence and the recorded human choice. The MCP final-disposition check then marked the ticket resolved.</li>
+          </ul>
+          <p><strong>Human actions:</strong> Tauhid Zaman approved the $840 invoice-501 payment (payment ledger ID 1) and recorded “Defer pending human-confirmed restock (no delivery date promised),” with terms requiring exact size-S availability confirmation and no unsupported receipt or delivery claim.</p>
+          <p><strong>MCP tools recorded across the agent runs:</strong> <code>list_tickets</code>, <code>get_ticket_product_context</code>, <code>get_ticket_restock_options</code>, <code>get_ticket_supplier_context</code>, <code>get_ticket_financial_context</code>, <code>request_payment_approval</code>, <code>request_human_decision</code>, and <code>append_ticket_board_item</code>. The Boss recovery also used read-only ticket/product/financial/decision checks. FastAPI invoked the MCP final-disposition gate after Boss completed.</p>
+          <p><strong>Outcome:</strong> operationally Resolved; inventory remains 0 and no receipt, restock, or delivery was recorded. The dashboard’s “Awaiting Restock” badge matches the human decision.</p>
+          <p class="actual-note"><strong>Audit wording discrepancy:</strong> Boss’s recovery summary contains a sentence saying the ticket “is not marked resolved.” The subsequent <code>final_disposition</code> audit event and current <code>tickets.status</code> both say <code>resolved</code>; the explicit MCP gate and database status are the final status evidence. This does not mean the tee was delivered.</p>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-102" role="tabpanel" aria-labelledby="tab-102" tabindex="0" hidden>
+        <div class="ticket-heading"><h2>Ticket 102 · Rent due</h2><span class="ticket-type">Rent notice</span></div>
+        <div class="facts"><span class="fact">Lease 1 · Chapel Street shop</span><span class="fact">Monthly rent: $2,400</span><span class="fact">Due 2026-09-02</span></div>
+
+        <h3 class="section-title">Expected</h3>
+        <div class="expected-copy">
+          <p><strong>Boss should contact Facilities first.</strong> This is a lease and rent-timing ticket. Facilities can verify the notice against the actual lease and the shop’s business date before Accounting considers the financial action.</p>
+          <ol class="sequence">
+            <li><strong>Boss → Facilities:</strong><p>Ask Facilities to verify the linked lease, landlord, monthly rent, and due date using the MCP rent context. With the stored shop date of August 31, 2026, rent is due in two days and is not overdue.</p></li>
+            <li><strong>Facilities → Accounting:</strong><p>After confirming the lease obligation, ask Accounting to check the current checking balance and pending reservations. If available funds cover exactly $2,400, Accounting may queue a rent-payment request for human approval. If not, it must stop and report insufficient funds.</p></li>
+            <li><strong>Boss final review:</strong><p>Report the verified due date and amount, whether a request is pending human approval, and that no payment has been made yet. No customer-service draft or vendor/facilities outreach is needed for this ticket based on the recorded request.</p></li>
+          </ol>
+        </div>
+        <h3 class="section-title">Expected MCP tools</h3>
+        <ul class="tools">
+          <li><code>list_open_tickets()</code> — Boss’ initial queue review</li>
+          <li><code>get_ticket_rent_context(102)</code> — lease facts and business-date timing</li>
+          <li><code>get_ticket_financial_context(102)</code> — cash and any payment reservations</li>
+          <li><code>request_payment_approval(102, rent, 1, 2400, checking)</code> — proposal only</li>
+        </ul>
+        <div class="caution"><strong>Approval rule:</strong> The starting cash balance is $3,400, but Accounting must check current funds and pending holds at run time. Queueing a request is not human approval and does not update the payment ledger.</div>
+
+        <h3 class="section-title">Actual</h3>
+        <div class="actual-box" aria-label="Actual ticket 102 workflow">
+          <p><strong>Recorded workflow:</strong> Boss delegated first to Facilities in workflow <code>93b77244-9511-4b03-93e7-65b3d082331c</code>. Facilities verified lease 1, Chapel Street shop, Elm City Properties, and $2,400 monthly rent. On the shop date 2026-08-31, the original due date 2026-09-02 was two days away, not overdue. Boss then prepared the exact rent-payment request; no Accounting agent run was recorded for this ticket.</p>
+          <ul>
+            <li><strong>Facilities:</strong> checked the linked lease and business-date timing; reported that cash was sufficient at that time and that payment still required a human.</li>
+            <li><strong>Boss:</strong> reported the proposal as pending human review and did not process the payment.</li>
+            <li><strong>Human approval:</strong> Bryan Liao approved rent request 2 for $2,400. Human-only processing created payment ledger ID 2, reduced checking to $160, and advanced the lease’s next due date to 2026-10-02. The MCP final-disposition check then resolved the ticket.</li>
+          </ul>
+          <p><strong>MCP tools recorded in the agent workflow:</strong> <code>list_tickets</code>, <code>get_ticket_rent_context</code>, <code>get_ticket_financial_context</code>, and <code>request_payment_approval</code>. Payment processing used the human-only <code>approve_and_process</code> tool; final status was handled by the post-run MCP disposition gate. No customer/vendor message or external contact was made.</p>
+          <p><strong>Outcome:</strong> Resolved after the approved $2,400 rent payment was recorded. This was the only cash movement for Ticket 102.</p>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-103" role="tabpanel" aria-labelledby="tab-103" tabindex="0" hidden>
+        <div class="ticket-heading"><h2>Ticket 103 · Bulk hoodie discount</h2><span class="ticket-type">Price override</span></div>
+        <div class="facts"><span class="fact">CC-HOOD-NAVY · size M · quantity 20</span><span class="fact">Stock: 8 · shortfall: 12</span><span class="fact">Unit cost: $22 · list price: $58</span></div>
+
+        <h3 class="section-title">Expected</h3>
+        <div class="expected-copy">
+          <p><strong>Boss should contact Inventory first.</strong> The request combines a bulk quantity and a discount, but only 8 of the 20 hoodies are currently in stock. Inventory should establish what can be supplied now and whether any replenishment path is supported by the database before a price or delivery promise is drafted.</p>
+          <ol class="sequence">
+            <li><strong>Boss → Inventory:</strong><p>Ask Inventory to verify the SKU/size count and inspect vendor specialties, lead days, and unpaid-invoice shipment holds. Inventory must report that the schema does not map this SKU to a vendor; a specialty match is not proof that a supplier can provide these hoodies.</p></li>
+            <li><strong>Inventory → Accounting:</strong><p>Ask Accounting to review the actual $22 unit cost and $58 list price for a margin check. At list price the gross difference is $36 per hoodie before other costs, but no target discount was specified, so Accounting should not approve or invent a discounted price.</p></li>
+            <li><strong>Boss → Customer Service:</strong><p>Once Inventory and Accounting report back, ask Customer Service to save a draft that acknowledges the request, asks for the group’s target price or discount if useful, and says availability for the remaining 12 is being checked. It must not promise a supplier, quantity, or arrival date.</p></li>
+            <li><strong>Boss final review:</strong><p>Separate the confirmed 8 on hand from the unconfirmed 12-unit replenishment; summarize the margin facts and unresolved price/supplier questions. Request human direction before committing a discount or purchase.</p></li>
+          </ol>
+        </div>
+        <h3 class="section-title">Expected MCP tools</h3>
+        <ul class="tools">
+          <li><code>list_open_tickets()</code> — Boss’ initial queue review</li>
+          <li><code>get_ticket_product_context(103)</code> — stock, shortfall, cost and list price</li>
+          <li><code>get_ticket_restock_options(103)</code> — vendor facts, lead days and unpaid-invoice holds</li>
+          <li><code>append_ticket_board_item(103, customer_message_draft, …)</code> — save draft, do not send</li>
+        </ul>
+        <div class="caution"><strong>Keep the scope narrow:</strong> No payment request is expected here: the ticket does not identify an approved replenishment purchase or a specific discount amount. Accounting can work from Inventory’s MCP-backed figures without repeating the same lookup.</div>
+
+        <h3 class="section-title">Actual</h3>
+        <div class="actual-box" aria-label="Actual ticket 103 workflow">
+          <p><strong>Recorded workflow:</strong> the first run (<code>fa4802ff-beb4-4861-950d-25585821af26</code>) included Inventory and Accounting, then Boss failed synthesis at 13,531 tokens against the former 12,000 limit. Boss attempted an invalid <code>fulfillment</code> decision for this price-override ticket; MCP rejected it. The supported <code>discount</code> decision request succeeded. In the next run (<code>206f4623-e1e3-4c70-a109-c080fbdc6e55</code>), Accounting and Customer Service completed their saved work; Boss’s premature status-check call correctly left the ticket open because the workflow had not completed, and Boss then exceeded its effective token limit (11,461 used against 10,435). Both failures remain in the audit.</p>
+          <ul>
+            <li><strong>Inventory (first attempt):</strong> verified 8 of 20 CC-HOOD-NAVY size-M hoodies in stock, shortfall 12; cost $22 and list price $58. The records do not establish a supplier for this SKU.</li>
+            <li><strong>Accounting:</strong> calculated $36 gross margin per hoodie at list price (about 62.07%; $720 across 20 before other costs), said no discount could be evaluated without a target, and in the second run saved the fact-matched note with <code>offer_unit_price=null</code>.</li>
+            <li><strong>Customer Service:</strong> saved board draft 3 asking for the buyer’s target unit price and stating 8 are available / 12 short, without promising a discount, fulfillment, or date. It remains unsent.</li>
+            <li><strong>Boss-only recovery:</strong> workflow <code>fd0d24a9-b9d3-440e-951f-d43bf9835e25</code> reused the verified Accounting note, draft, current MCP facts, and existing human decision. Boss completed synthesis; the normal final-disposition check resolved the ticket. No specialist was rerun.</li>
+          </ul>
+          <p><strong>Human decision:</strong> Bryan Liao chose “Ask customer for a target unit price.” No discount amount or new selling price was approved. No payment, purchase request, or cash change was recorded.</p>
+          <p><strong>MCP tools recorded across the attempts:</strong> <code>list_open_tickets</code>, <code>list_tickets</code>, <code>get_ticket_product_context</code>, <code>get_ticket_financial_context</code>, <code>list_decisions</code>, <code>request_human_decision</code> (the invalid fulfillment attempt was rejected; the discount request succeeded), <code>append_ticket_board_item</code>, and <code>mark_ticket_resolved</code>. The recovery preflight also used <code>get_ticket_board_items</code> to verify the saved note and draft. The earlier <code>mark_ticket_resolved</code> call returned <code>resolved=false</code> with “The latest ticket workflow has not completed”; after Boss recovery, the normal final-disposition gate passed.</p>
+          <p><strong>Outcome:</strong> operationally Resolved as a discount-request handling step. This does not mean a discount was granted or all 20 hoodies were supplied; 12 remain a stock shortfall and the target price is still needed.</p>
+        </div>
+      </section>
+
+      <section class="panel" id="panel-cash" role="tabpanel" aria-labelledby="tab-cash" tabindex="0" hidden>
+        <div class="ticket-heading"><h2>Cash</h2><span class="ticket-type">Starting balance recorded</span></div>
+        <p class="cash-intro">The working database was reset from the original at <strong>2026-10-12 19:40 UTC</strong>. The shop business date remains <strong>2026-08-31</strong>, as stored in <code>desk.date_today</code>. The reconciliation below matches the current working database’s <code>cash_accounts</code> and <code>payments</code> records.</p>
+        <div class="cash-summary"><span>STARTING CHECKING BALANCE</span><strong>$3,400.00</strong><small>Verified from <code>cash_accounts</code> immediately after reset.</small></div>
+        <h3 class="section-title">Cash movements by ticket</h3>
+        <div class="cash-ledger-wrap">
+          <table class="cash-ledger">
+            <thead><tr><th>Ticket / event</th><th>Reason and transaction</th><th>Cash change</th><th>Running balance</th></tr></thead>
+            <tbody>
+              <tr><td>Starting balance</td><td>Original checking balance after the reset</td><td>$0.00</td><td>$3,400.00</td></tr>
+              <tr><td>Ticket 101 · payment 1</td><td>Human-approved payment of invoice 501 (“Rush reprint CC-TEE-WHITE S”); invoice status is Paid. Approved by Tauhid Zaman.</td><td>−$840.00</td><td>$2,560.00</td></tr>
+              <tr><td>Ticket 102 · payment 2</td><td>Human-approved rent payment for lease 1 (Chapel Street shop); approved by Bryan Liao.</td><td>−$2,400.00</td><td>$160.00</td></tr>
+              <tr><td>Ticket 103</td><td>No payment or purchase request; human decision asked the customer for a target unit price.</td><td>$0.00</td><td>$160.00</td></tr>
+              <tr><td><strong>Final checking balance</strong></td><td>Matches <code>cash_accounts.balance</code> in <code>campus_customs_new.db</code> (balance date 2026-08-31).</td><td>$0.00</td><td><strong>$160.00</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="cash-footnote">Only completed, human-approved transactions recorded in <code>payments</code> count as cash changes. Pending proposals are not deductions; incoming cash is outside this homework model.</p>
+      </section>
+
+      <section class="panel" id="panel-reflection" role="tabpanel" aria-labelledby="tab-reflection" tabindex="0" hidden>
+        <div class="ticket-heading"><h2>Reflection</h2><span class="ticket-type">Problem 10 · Lessons learned</span></div>
+        <h3 class="section-title">What “resolved” means for an out-of-stock order</h3>
+        <div class="expected-copy">
+          <p>A ticket can reach <strong>Resolved</strong> after its latest agent workflow is complete, every financial proposal has a human outcome, and a human explicitly chooses what to do about any remaining fulfillment shortfall. For Ticket 101, the paid invoice does not prove a size-S Bulldog tee is available or delivered. A decision such as defer, backorder, or cancel records that the blocking issue was handled; it is not a shipment or delivery receipt.</p>
+          <p>The current system has no authorized way to confirm received goods, and this homework step must not simulate a delivery or increase stock. Any future receipt capability must be human-only: <code>receive_purchase_order</code> should record the actual quantity received against an approved purchase order and transactionally update inventory. Inventory should own the receipt record, with Accounting reconciling the PO and financial records. This tool is a documented gap only; it is not implemented or available in the current team.</p>
+          <p>Operational decisions are kept in an external, file-locked JSON record and the append-only audit trail, not in new shop-database tables or columns. The dashboard records the human's name, selected option, and terms; the MCP final-disposition check independently decides whether the ticket may be marked resolved.</p>
+        </div>
+
+        <h3 class="section-title">1. How the agents handled these three tickets</h3>
+        <div class="expected-copy">
+          <p><strong>Ticket 101 — Bulldog tee:</strong> The specialists did the useful investigation: Inventory established that the exact size-S tee had zero stock and treated Bulldog Print Co. only as a historical supplier candidate, Accounting checked invoice 501 and prepared the $840 proposal, and Customer Service saved a careful draft with no delivery promise. The weak point was Boss synthesis: one run failed at the request limit, another exceeded 12,000 tokens after the specialist reports were already saved. Once the human approved the invoice and chose to defer fulfillment until restock is confirmed, the Boss-only recovery reused those reports rather than repeating the work. I think that recovery was a good use of the audit trail. One Boss recovery summary had stale wording that the ticket was not marked resolved; I checked it against the later final-disposition event and database status, which both say resolved. The ticket is operationally resolved, but the tee is still not in stock and has not been delivered.</p>
+          <p><strong>Ticket 102 — Rent due:</strong> This was the smoothest run. Boss brought in Facilities to confirm the $2,400 lease payment and due-date timing against the shop date. The agent workflow correctly stopped for a human; Bryan approved it, and the payment was recorded. The checking balance and lease due date then updated, and the final MCP check resolved the ticket. One useful detail from the audit is that Boss prepared the request itself after Facilities reported back; the expected plan had Accounting do that step, but no Accounting-agent run was recorded.</p>
+          <p><strong>Ticket 103 — Bulk hoodie discount:</strong> The specialists found the important facts: 8 of 20 hoodies were available, 12 were short, and the recorded cost/list prices were $22/$58. Accounting correctly refused to invent a discount without a target price, and Customer Service saved a draft asking for one. This ticket also exposed our rough edges: a fulfillment decision was rejected because this is a discount ticket, Boss exceeded its token limit twice, and an early <code>mark_ticket_resolved</code> call properly left the ticket open while the workflow was incomplete. The later Boss-only recovery verified and reused the saved Accounting note, draft, and human decision. No discount was granted and the 12-unit shortfall was not filled.</p>
+          <p>At final review, the ticket tabs and screenshots showed all three database statuses as Resolved. The dashboard's run counter showed 00 and its activity panel was quiet after reload, because the live run objects are held in memory. I therefore used the append-only audit records to check the actual delegations, saved specialist reports, human actions, failures, recovery workflows, and final-disposition events instead of treating the quiet panel as proof that nothing had run.</p>
+        </div>
+
+        <h3 class="section-title">2. Expected plans compared with what happened</h3>
+        <div class="expected-copy">
+          <p>For <strong>Ticket 101</strong>, the expected plan began with Inventory and then had Inventory bring in Accounting. The actual Boss did ask Inventory first, but Boss delegated to Accounting and Customer Service directly rather than having Inventory delegate. The first completed specialist run still covered the intended stock, invoice, payment, and draft work. The bigger difference was after that: Boss could not synthesize within the token budget, so the later recovery had to be added. That recovery was appropriately narrow and used the saved reports plus the human decisions.</p>
+          <p>For <strong>Ticket 102</strong>, the expected Facilities-first route happened. The expected next step was Facilities → Accounting; in practice Boss handled the exact $2,400 proposal itself after the lease and available-cash facts were returned. That was a reasonable shortcut for this simple, linked rent obligation, as long as the separate human approval remained in place—which it did.</p>
+          <p>For <strong>Ticket 103</strong>, our plan expected Inventory first, followed by Accounting and Customer Service. The first attempt did include Inventory and Accounting. In the later run, we streamlined the route: Accounting's MCP product-context tool already returned both stock and pricing, so Boss did not need to send Inventory to repeat that lookup. Accounting and Customer Service saved their work, but Boss still hit a token ceiling. The two failed synthesis records were kept; the final Boss-only recovery was a separate run, not a rewrite of those failures. We also learned to use the <code>discount</code> decision kind here rather than <code>fulfillment</code>.</p>
+        </div>
+
+        <h3 class="section-title">3. Work a single tool-using agent could handle</h3>
+        <div class="expected-copy">
+          <p>Ticket 102 is the clearest example. One well-scoped agent with the rent-context, financial-context, and payment-request tools could verify the linked lease, compare its due date to <code>desk.date_today</code>, check cash, and prepare the exact proposal. Splitting that short chain between Facilities and Boss added coordination without much extra insight. I would still keep the human approval outside the agent.</p>
+          <p>Parts of Ticket 103 could also be combined: Accounting's product-context tool already returns stock and pricing, and the saved pricing note is a straightforward fact-based calculation. A single agent could do that analysis and recommend asking for a target price. Keeping Customer Service separate still helped, though, because writing a customer-facing draft is a different job and its no-promise wording matters.</p>
+          <p>Ticket 101 benefited more from distinct checks. Inventory had to reason about an exact SKU/size shortage and what vendor evidence did—and did not—prove; Accounting handled an invoice and cash proposal; Customer Service wrote a sensitive update. A single agent could call all those tools, but separate specialists made the risks easier to review. The main lesson is to delegate for genuinely different expertise, not simply to create more agent turns.</p>
+        </div>
+
+        <h3 class="section-title">4. Three realistic problems this team could handle now</h3>
+        <div class="expected-copy">
+          <ol class="sequence">
+            <li><strong>A customer asks whether a particular size is in stock.</strong><p>Boss could route the ticket to Inventory for an exact SKU/size check and then to Customer Service to save a factual answer as a draft. The product-context and board-item tools support that path, and the draft would not be sent automatically.</p></li>
+            <li><strong>A linked supplier invoice is approaching its due date.</strong><p>Accounting could check the invoice, shop business date, checking balance, and pending requests, then prepare an exact invoice-payment proposal. A human would still have to approve it before cash leaves the account.</p></li>
+            <li><strong>A landlord sends a routine rent notice for a recorded lease.</strong><p>Facilities could verify the lease amount and due date using the stored shop date; Boss or Accounting could check funds and prepare the rent request. The approval route would record the payment and update the lease without the agents contacting the landlord.</p></li>
+          </ol>
+        </div>
+
+        <h3 class="section-title">5. Three problems we cannot safely solve yet</h3>
+        <div class="expected-copy">
+          <ol class="sequence">
+            <li><strong>Confirming that a shipment actually arrived and putting it on the shelf.</strong><p>We can prepare a purchase request, but the current tools cannot record a real receipt. We would need a human-only <code>receive_purchase_order</code> MCP tool that checks the approved PO and actual received quantity, updates inventory transactionally, and preserves receipt evidence. Inventory should own that step, with Accounting reconciling the PO and bill. Until then, neither a purchase approval nor a resolved ticket means goods were received.</p></li>
+            <li><strong>Sending an email or contacting a supplier.</strong><p>Customer Service can draft messages, but the project intentionally has no tool that sends them or calls a vendor. If the shop later authorizes real contact, we would need a tightly permissioned send/contact MCP tool with human review and delivery logs, plus a communications or vendor-relations agent to manage replies. That would be an expansion of the current no-external-contact rule, not something the existing agents should do.</p></li>
+            <li><strong>Recording sales income, customer refunds, or other money coming in.</strong><p>This homework's financial model only lets money leave the business, so these agents cannot reconcile a sale or refund into cash. That would require verified point-of-sale/refund records and MCP tools for incoming transactions and reconciliation, plus an Accounting workflow for matching them to the bank. It should be added only if the assignment's cash-flow rules are changed.</p></li>
+          </ol>
+        </div>
+
+        <h3 class="section-title">6. What the Cash tab taught me</h3>
+        <div class="expected-copy">
+          <p>The numbers made the human-approval rule feel concrete: checking started at <strong>$3,400</strong>; the approved Ticket 101 invoice payment took out <strong>$840</strong>, leaving <strong>$2,560</strong>; the approved Ticket 102 rent payment took out <strong>$2,400</strong>, leaving <strong>$160</strong>. Ticket 103 changed cash by <strong>$0</strong>. The two payment rows, approver names, invoice status, and final <code>cash_accounts</code> balance agree. We did not count a request as a payment, invent incoming revenue, or let the balance go negative.</p>
+          <p>My overall takeaway is that the team was strongest when its job was bounded by clear records and an exact MCP action, and weakest when Boss had to carry too much history into one final answer. Human choices and the final-disposition gate kept those weaknesses from turning into a duplicate payment, invented stock, or a false delivery claim. The recovery work made the system more useful, but the audit trail—not a green badge by itself—is what lets me explain why each ticket ended where it did.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer>Standalone workflow record · Expected plans and actual outcomes · No external resources required</footer>
+  </div>
+
+  <script>
+    (() => {
+      const tabs = [...document.querySelectorAll('[role="tab"]')];
+      const panels = tabs.map(tab => document.getElementById(tab.getAttribute('aria-controls')));
+
+      function activate(index, moveFocus = false) {
+        tabs.forEach((tab, i) => {
+          const selected = i === index;
+          tab.setAttribute('aria-selected', String(selected));
+          tab.tabIndex = selected ? 0 : -1;
+          panels[i].hidden = !selected;
+        });
+        if (moveFocus) tabs[index].focus();
+      }
+
+      tabs.forEach((tab, index) => {
+        tab.addEventListener('click', () => activate(index));
+        tab.addEventListener('keydown', event => {
+          let next = index;
+          if (event.key === 'ArrowRight') next = (index + 1) % tabs.length;
+          else if (event.key === 'ArrowLeft') next = (index - 1 + tabs.length) % tabs.length;
+          else if (event.key === 'Home') next = 0;
+          else if (event.key === 'End') next = tabs.length - 1;
+          else return;
+          event.preventDefault();
+          activate(next, true);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

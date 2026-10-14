@@ -1,0 +1,82 @@
+{
+  "server": "campus_customs",
+  "database": "data/campus_customs_new.db",
+  "tests": [
+    {
+      "prompt": "Use the campus_customs MCP server tool get_ticket_product_context exactly once with ticket_id 101. Do not use other tools. Return the tool result exactly as JSON without changing any values.",
+      "tool": "get_ticket_product_context",
+      "output": {
+        "ticket_id": 101,
+        "subject": "Bulldog tee",
+        "sku": "CC-TEE-WHITE",
+        "size": "S",
+        "requested_qty": 1,
+        "inventory": {
+          "sku": "CC-TEE-WHITE",
+          "name": "Classic Bulldog Tee",
+          "size": "S",
+          "qty": 0,
+          "location": "Aisle B"
+        },
+        "available_qty": 0,
+        "shortfall_qty": 1,
+        "stock_status": "out_of_stock",
+        "pricing": {
+          "sku": "CC-TEE-WHITE",
+          "unit_cost": 8.0,
+          "list_price": 28.0
+        }
+      }
+    },
+    {
+      "prompt": "Use the campus_customs MCP server tool get_ticket_supplier_context exactly once with ticket_id 101. Do not use other tools. Return the tool result exactly as JSON without changing any values.",
+      "tool": "get_ticket_supplier_context",
+      "output": {
+        "ticket_id": 101,
+        "shop_date": "2026-08-31",
+        "linked_invoice": {
+          "invoice_id": 501,
+          "vendor_id": 1,
+          "amount": 840.0,
+          "due_date": "2026-08-28",
+          "invoice_status": "open",
+          "description": "Rush reprint CC-TEE-WHITE S",
+          "vendor_name": "Bulldog Print Co",
+          "specialty": "apparel reprint",
+          "lead_days": 5
+        },
+        "linked_invoice_overdue": true,
+        "vendor_outstanding_invoices": [
+          {
+            "id": 501,
+            "amount": 840.0,
+            "due_date": "2026-08-28",
+            "status": "open",
+            "description": "Rush reprint CC-TEE-WHITE S",
+            "overdue": true
+          }
+        ],
+        "invoice_allows_new_shipment": false
+      }
+    },
+    {
+      "prompt": "Use the campus_customs MCP server tool get_ticket_rent_context exactly once with ticket_id 102. Do not use other tools. Return the tool result exactly as JSON without changing any values.",
+      "tool": "get_ticket_rent_context",
+      "output": {
+        "ticket_id": 102,
+        "subject": "Rent due",
+        "shop_date": "2026-08-31",
+        "lease": {
+          "lease_id": 1,
+          "space_name": "Chapel Street shop",
+          "landlord": "Elm City Properties",
+          "monthly_rent": 2400.0,
+          "next_due": "2026-09-02",
+          "notes": null
+        },
+        "days_until_due": 2,
+        "overdue": false
+      }
+    }
+  ]
+}

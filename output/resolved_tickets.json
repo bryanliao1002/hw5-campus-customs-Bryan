@@ -1,0 +1,241 @@
+{
+  "database": {
+    "working_database": "data/campus_customs_new.db",
+    "business_date": "2026-08-31",
+    "starting_checking_balance": 3400.0,
+    "payments_recorded": [
+      {
+        "payment_id": 1,
+        "ticket_id": 101,
+        "kind": "invoice",
+        "reference_id": 501,
+        "amount": 840.0,
+        "approved_by": "Tauhid Zaman",
+        "paid_at_business_date": "2026-08-31"
+      },
+      {
+        "payment_id": 2,
+        "ticket_id": 102,
+        "kind": "rent",
+        "reference_id": 1,
+        "amount": 2400.0,
+        "approved_by": "Bryan Liao",
+        "paid_at_business_date": "2026-08-31"
+      }
+    ],
+    "purchase_requests": [],
+    "cash_reconciliation": {
+      "ticket_101_change": -840.0,
+      "ticket_102_change": -2400.0,
+      "ticket_103_change": 0.0,
+      "total_change": -3240.0,
+      "calculation": "3400.00 - 840.00 - 2400.00 + 0.00 = 160.00",
+      "final_checking_balance": 160.0,
+      "matches_working_database_cash_accounts": true
+    }
+  },
+  "tickets": [
+    {
+      "ticket_id": 101,
+      "final_status": "resolved",
+      "outcome": "The $840 invoice 501 obligation was paid after human approval, and the human explicitly chose to defer fulfillment until the exact CC-TEE-WHITE size-S item is confirmed available. This is an operational resolution of the blocker, not delivery: inventory remained at 0 with a shortfall of 1, and no receipt or shipment was recorded.",
+      "fulfillment": {
+        "sku": "CC-TEE-WHITE",
+        "size": "S",
+        "requested_quantity": 1,
+        "available_quantity_at_final_disposition": 0,
+        "shortfall": 1,
+        "goods_received_or_delivered": false,
+        "dashboard_secondary_status": "Awaiting Restock"
+      },
+      "agents": [
+        {
+          "role": "Inventory",
+          "contribution": "Verified zero size-S stock and a one-unit shortfall; reviewed vendor and invoice evidence without claiming a supplier could currently provide the item."
+        },
+        {
+          "role": "Accounting",
+          "contribution": "Verified linked invoice 501 for $840 and available checking, then prepared payment request 1 for human approval; did not process the payment."
+        },
+        {
+          "role": "Customer Service",
+          "contribution": "Saved ticket-board customer_message_draft update 1 stating the item was unavailable and no restock or delivery date was confirmed; it was not sent."
+        },
+        {
+          "role": "Boss",
+          "contribution": "After the human actions, completed a separate Boss-only synthesis from the saved specialist reports and current MCP evidence. The following MCP final-disposition event and database row mark the ticket resolved."
+        }
+      ],
+      "workflow_history": [
+        {
+          "workflow_id": "24033c8b-08e2-4b61-a298-bb3d7232882f",
+          "result": "failed",
+          "reason": "UsageLimitExceeded: The next request would exceed the request_limit of 4"
+        },
+        {
+          "workflow_id": "208233eb-e086-4829-8294-35e4eab442c2",
+          "result": "specialist evidence saved; Boss synthesis failed",
+          "reason": "UsageLimitExceeded: total_tokens_limit 12000; total_tokens 14308"
+        },
+        {
+          "workflow_id": "ee7a96a6-f7ed-4d42-8f63-6434545a4292",
+          "result": "Boss-only synthesis completed and final disposition recorded",
+          "recovery_of": "208233eb-e086-4829-8294-35e4eab442c2"
+        }
+      ],
+      "mcp_tools_used_by_agents": [
+        "list_tickets",
+        "get_ticket_product_context",
+        "get_ticket_restock_options",
+        "get_ticket_supplier_context",
+        "get_ticket_financial_context",
+        "request_payment_approval",
+        "request_human_decision",
+        "append_ticket_board_item"
+      ],
+      "system_finalization": "The post-completion MCP final-disposition gate recorded resolved=true, invoice 501 paid, the decided fulfillment outcome, and inventory_consumed=false.",
+      "audit_note": "Boss's recovery output includes a stale sentence saying the ticket was not marked resolved. The subsequent final_disposition event and current tickets.status both record resolved; neither record claims the tee was delivered.",
+      "human_approvals": [
+        {
+          "request_id": 1,
+          "payment_id": 1,
+          "kind": "invoice",
+          "reference_id": 501,
+          "amount": 840.0,
+          "approved_by": "Tauhid Zaman",
+          "status": "processed"
+        }
+      ],
+      "human_decisions": [
+        {
+          "decision_id": "e5e05637-63a3-45bc-ae35-7f7c60e5ffe1",
+          "kind": "fulfillment",
+          "status": "decided",
+          "decided_by": "Tauhid Zaman",
+          "choice": "Defer pending human-confirmed restock (no delivery date promised)",
+          "terms": "Defer fulfillment until the exact SKU and size S are confirmed available. Do not promise a delivery date. Any customer-facing communication must be reviewed by a human before sending. Do not record inventory receipt or delivery without actual evidence."
+        }
+      ],
+      "cash_change": -840.0
+    },
+    {
+      "ticket_id": 102,
+      "final_status": "resolved",
+      "outcome": "Human-approved $2,400 rent for lease 1 was processed and recorded. The shop date was 2026-08-31 and the original due date was 2026-09-02; the lease next_due field is now 2026-10-02. No external contact was sent.",
+      "agents": [
+        {
+          "role": "Facilities",
+          "contribution": "Verified lease 1 for the Chapel Street shop, Elm City Properties, monthly rent $2,400, and due date relative to desk.date_today. Reported that payment required human approval."
+        },
+        {
+          "role": "Boss",
+          "contribution": "Reviewed Facilities' findings and queued the exact $2,400 rent request for human review. No Accounting agent invocation was recorded for Ticket 102."
+        }
+      ],
+      "workflow_history": [
+        {
+          "workflow_id": "93b77244-9511-4b03-93e7-65b3d082331c",
+          "result": "agent workflow returned needs_human; human payment approval followed, then final disposition resolved the ticket"
+        }
+      ],
+      "mcp_tools_used_by_agents": [
+        "list_tickets",
+        "get_ticket_rent_context",
+        "get_ticket_financial_context",
+        "request_payment_approval"
+      ],
+      "human_approvals": [
+        {
+          "request_id": 2,
+          "payment_id": 2,
+          "kind": "rent",
+          "reference_id": 1,
+          "amount": 2400.0,
+          "approved_by": "Bryan Liao",
+          "status": "processed"
+        }
+      ],
+      "human_decisions": [],
+      "cash_change": -2400.0
+    },
+    {
+      "ticket_id": 103,
+      "final_status": "resolved",
+      "outcome": "The price-override request was handled by recording the human's direction to ask the customer for a target unit price and saving a matching unsent draft. No discount was granted, no payment or purchase was requested, and the 12-unit hoodie shortfall was not fulfilled.",
+      "fulfillment": {
+        "sku": "CC-HOOD-NAVY",
+        "size": "M",
+        "requested_quantity": 20,
+        "available_quantity_recorded": 8,
+        "shortfall": 12,
+        "discount_granted": false,
+        "goods_delivered": false
+      },
+      "agents": [
+        {
+          "role": "Inventory",
+          "contribution": "In the first failed attempt, verified 8 of 20 hoodies in stock and 12 short, with recorded $22 cost and $58 list price; the database did not prove an exact SKU/vendor supply relationship."
+        },
+        {
+          "role": "Accounting",
+          "contribution": "Analyzed list-price gross margin ($36 per unit; about 62.07%, or $720 across 20 before other costs), noted that no target price was provided, and saved board update 2 with offer_unit_price=null."
+        },
+        {
+          "role": "Customer Service",
+          "contribution": "Saved board update 3 as an unsent customer_message_draft asking for the target unit price and accurately stating 8 available / 12 short without a fulfillment or delivery promise."
+        },
+        {
+          "role": "Boss",
+          "contribution": "Two normal runs failed during final synthesis. Boss-only recovery reused persisted Accounting and Customer Service evidence and the existing human decision; the normal final-disposition gate then resolved the ticket."
+        }
+      ],
+      "workflow_history": [
+        {
+          "workflow_id": "fa4802ff-beb4-4861-950d-25585821af26",
+          "result": "Inventory and Accounting evidence saved; Boss synthesis failed",
+          "reason": "UsageLimitExceeded: total_tokens_limit 12000; total_tokens 13531"
+        },
+        {
+          "workflow_id": "206f4623-e1e3-4c70-a109-c080fbdc6e55",
+          "result": "Accounting note and Customer Service draft saved; pre-completion status check correctly kept ticket open; Boss synthesis failed",
+          "reason": "UsageLimitExceeded: effective total_tokens_limit 10435; total_tokens 11461"
+        },
+        {
+          "workflow_id": "fd0d24a9-b9d3-440e-951f-d43bf9835e25",
+          "result": "Boss-only recovery completed from verified persisted evidence and final disposition resolved the ticket",
+          "recovery_of": "206f4623-e1e3-4c70-a109-c080fbdc6e55"
+        }
+      ],
+      "mcp_tools_used_by_agents": [
+        "list_open_tickets",
+        "list_tickets",
+        "get_ticket_product_context",
+        "get_ticket_financial_context",
+        "list_decisions",
+        "request_human_decision",
+        "append_ticket_board_item",
+        "mark_ticket_resolved"
+      ],
+      "recovery_preflight_mcp_tools": [
+        "get_ticket_board_items",
+        "get_ticket_product_context",
+        "get_ticket_financial_context",
+        "list_decisions",
+        "list_tickets"
+      ],
+      "system_finalization": "The earlier mark_ticket_resolved call returned resolved=false because the latest workflow had not completed. After Boss-only synthesis, the final-disposition event recorded resolved=true; no cash or inventory changed.",
+      "human_approvals": [],
+      "human_decisions": [
+        {
+          "decision_id": "2f6d370b-3e48-4144-a23c-22ca55694089",
+          "kind": "discount",
+          "status": "decided",
+          "decided_by": "Bryan Liao",
+          "choice": "Ask customer for a target unit price",
+          "terms": "Ask the customer to provide their target unit price before we evaluate any discount. The current list price is $58 per hoodie, and only 8 of the requested 20 navy size-M hoodies are in stock. The remaining 12 would need to be restocked. No discount or delivery date should be promised until we have more information. Keep the customer message as a draft."
+        }
+      ],
+      "cash_change": 0.0
+    }
+  ]
+}

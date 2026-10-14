@@ -1,0 +1,35 @@
+# Credentials and local tool configuration that may contain secrets
+.env
+.env.*
+!.env.example
+
+# Local environments, caches, and generated files
+**/.venv/
+**/venv/
+**/node_modules/
+frontend/dist/
+frontend/.vite/
+__pycache__/
+*.py[cod]
+*.tsbuildinfo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+*.log
+
+# OS metadata and duplicate source archive
+.DS_Store
+Thumbs.db
+data (2).zip
+
+# SQLite transient files
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+output/audit_trail.json.lock
+output/human_decisions.json
+output/human_decisions.json.lock
+output/run_backups/
+# Local note for restarting the neighboring HW4 services; not part of HW5.
+output/hw4_restart_notes.md
